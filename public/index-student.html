@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard</title>
+
+  <link rel="stylesheet" href="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.css" />
+  <script src="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.js"></script>
+
+
+  <script src="./assets/chart.js"></script>
+  <script src="./assets/tailwind.js"></script>
+  <link href="./assets/googlefont.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Kanit', sans-serif;
+    }
+    #calendar {
+      height: 16rem;
+      max-width: 100%;
+    }
+  </style>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#fff1f1',
+              100: '#ffdfdf',
+              500: '#ff2a2a',
+              600: '#ed1515',
+              700: '#c80d0d',
+            },
+            secondary: {
+              100: '#ededed',
+              200: '#dfdfdf',
+              500: '#878787',
+              600: '#6d6d6d',
+              700: '#5d5d5d',
+            },
+            success: {
+              500: '#4BC0C0',
+            }
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-gray-50">
+  <!-- Header -->
+  <header class="bg-white border-b">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex h-16 justify-between items-center">
+        <h1 class="text-2xl font-bold text-primary-600">STIN</h1>
+        <div class="flex items-center gap-4">
+          <button class="p-2 hover:bg-gray-100 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+          </button>
+          <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+            <span class="text-primary-600 font-medium">A</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- Welcome Section -->
+    <section class="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="md:col-span-2">
+        <h2 class="text-3xl font-bold text-gray-900">ยินดีต้อนรับกลับมา คุณแจง</h2>
+        <p class="text-secondary-600">ข้อมูลเกี่ยวกับการฝึกหัดในรายวิชาต่างๆ</p>
+      </div>
+      <div class="flex justify-end items-center gap-6">
+        <div class="flex items-center gap-2">
+          <div class="p-2 bg-primary-50 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div>
+            <p class="text-sm text-secondary-600">จำนวนชั่วโมงที่ฝึก</p>
+            <p class="font-semibold">34 hours</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Summary Section -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 bg-white rounded-lg shadow-sm p-6 mb-6">
+      <div class="lg:col-span-7">
+        <h3 class="text-lg font-semibold mb-4">ภาพรวมความก้าวหน้ารายวิชา</h3>
+        <p class="text-sm text-gray-600 mb-4">
+          เปรียบเทียบความคืบหน้าของแต่ละ Scenario ในการฝึกทั้งหมด
+        </p>
+        <div class="relative h-72">
+          <canvas id="scenarioProgressChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="lg:col-span-5 flex flex-col justify-between">
+        <div class="mb-4">
+          <h3 class="text-lg font-semibold mb-4">สรุป</h3>
+          <ul class="space-y-4">
+            <li class="flex items-center">
+              <div class="w-12 h-12 bg-success-100 text-success-600 rounded-full flex items-center justify-center font-bold text-lg">
+                5
+              </div>
+              <p class="ml-4 text-sm font-medium">
+                <span class="text-primary-600 font-bold">Scenarios Completed</span> (จากทั้งหมด 7)
+              </p>
+            </li>
+            <li class="flex items-center">
+              <div class="w-12 h-12 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center font-bold text-lg">
+                420
+              </div>
+              <p class="ml-4 text-sm font-medium">
+                <span class="text-primary-600 font-bold">Tasks Completed</span> (จากทั้งหมด 600 tasks)
+              </p>
+            </li>
+            <li class="flex items-center">
+              <div class="w-12 h-12 bg-secondary-100 text-secondary-600 rounded-full flex items-center justify-center font-bold text-lg">
+                45
+              </div>
+              <p class="ml-4 text-sm font-medium">
+                <span class="text-primary-600 font-bold">Total Hours</span> ที่ใช้ฝึก
+              </p>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <p class="text-sm text-gray-600">
+            คลิกที่แถบของ Scenario เพื่อดูรายละเอียดเพิ่มเติมเกี่ยวกับ progress และ performance.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="scenarioProgressSection" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div id="scenarioProgressContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Progress charts for each scenario will be dynamically generated here -->
+      </div>
+    </section>
+
+    <!-- Scenario Dropdown -->
+    <section class="mb-6">
+      <label for="scenarioFilter" class="block text-sm font-medium text-gray-700 mb-2">เลือก Scenario</label>
+      <select id="scenarioFilter" class="block w-full border border-gray-300 rounded-md shadow-sm p-2">
+        <option value="./data/scenario1">การปั๊มหัวใจ CPR</option>
+        <option value="./data/scenario2">การดูแลผู้คลอดที่มีภาวะตกเลือด</option>
+        <option value="./data/scenario3" selected>การทำคลอดปกติ</option>
+
+        <option value="./data/scenario2">การดูแลผู้ป่วยจิตเวช</option>
+        <option value="./data/scenario2">การให้สารละลายทางหลอดเลือดดำ</option>
+        <option value="./data/scenario2">การให้อาหารทางสาย</option>
+        <option value="./data/scenario2">การซักประวัติและการตรวจร่างกาย</option>
+      </select>
+    </section>
+
+    <!-- Subject Header -->
+    <section id="subject-header" class="bg-white shadow-sm rounded-lg p-6 mb-6">
+      <h1 class="text-3xl font-bold text-primary-600">Subject Name Placeholder</h1>
+      <p class="text-gray-600 text-sm mt-2">ข้อมูลเกี่ยวกับการฝึกหัดและการพัฒนาทักษะในหัวข้อนี้</p>
+    </section>
+
+    <!-- Dashboard Grid -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- Tasks Progression -->
+      <div class="lg:col-span-3 bg-white rounded-xl shadow-sm p-6">
+        <h3 class="text-lg text-center font-semibold mb-4">จำนวน Tasks ที่ทำเสร็จ</h3>
+
+        <!-- Description -->
+        <p class="text-sm text-center text-gray-600 mb-4">
+          แสดงความก้าวหน้าโดยรวมของรายวิชานี้
+        </p>
+
+        <!-- Doughnut Chart Component -->
+        <div class="relative aspect-square">
+          <canvas id="progressChart"></canvas>
+          <div class="absolute inset-0 flex items-center justify-center">
+            <div id="progressText" class="text-center">
+              <span class="text-4xl font-bold">--%</span>
+              <p class="text-sm text-secondary-500">Overall Progress</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="lg:col-span-9 bg-white rounded-xl shadow-sm p-6">
+        <h3 class="text-lg font-semibold mb-4">ภาพรวมคะแนน ของคุณ</h3>
+        <!-- Description -->
+        <p class="text-sm text-gray-600 mb-4">
+          แสดงความก้าวหน้าของการฝึกแต่ละครั้ง
+        </p>
+      
+        <!-- Chart Container -->
+        <div class="h-64">
+          <canvas id="performanceChart"></canvas>
+        </div>
+      </div>      
+
+      <!-- Card: การฝึกและเวลา -->
+      <div class="lg:col-span-12 grid grid-cols-1 md:grid-cols-12 gap-6">
+        <div class="col-span-3 bg-white rounded-lg shadow-md p-6 flex flex-col items-center justify-center">
+          <div class="w-16 h-16 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-bold mt-4">
+            <span class="text-primary-600">การฝึกที่แนะนำ</span> / 
+            <span class="text-secondary-600">ภายใน</span>
+          </h3>
+          <p class="text-2xl font-extrabold mt-2">
+            <span class="text-primary-600">
+              อีก <span id="recommendedSessions">--</span> ครั้ง
+            </span>/
+            <span class="text-secondary-600">
+              <span id="remainingDays">--</span> วัน
+            </span>
+          </p>
+        </div>
+      
+        <!-- Card: Task ที่ควร Focus -->
+        <div class="col-span-9 bg-white rounded-lg shadow-md p-6">
+          <h3 class="text-lg font-semibold mb-4">Task ที่แนะนำให้ฝึกเพิ่ม</h3>
+          <ul id="focusTaskList"></ul>
+        </div>
+      </div>   
+
+      <!-- Template Dropdown -->
+      <div class="lg:col-span-3">
+        <label for="templateFilter" class="block text-sm font-medium text-gray-700 mb-2">เลือก Scenario ที่ได้ฝึก</label>
+        <select id="templateFilter" class="block w-full border border-gray-300 rounded-md shadow-sm p-2">
+          <!-- Options will be dynamically added here -->
+        </select>
+      </div>
+      <div class="lg:col-span-9"></div>
+
+      <!-- Time Improvement Chart -->
+      <div class="lg:col-span-8 bg-white rounded-xl shadow-sm p-6">
+        <h3 class="text-lg font-semibold mb-4">พัฒนาการด้านเวลา</h3>
+        <p class="text-sm text-gray-600 mb-4">
+          แสดงความก้าวหน้าโดยรวมของรายวิชานี้ในเชิงเวลา
+        </p>
+        
+        <div class="h-64">
+          <canvas id="timeImprovementChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Calendar -->
+      <div class="lg:col-span-4 bg-white rounded-xl shadow-sm p-6">
+        <h3 class="text-lg font-semibold mb-4">ปฏิทินการฝึก</h3>
+        <div class="navigation-buttons text-center">
+          <button id="prev-button">< Previous</button>
+          <button id="today-button">| Today |</button>
+          <button id="next-button">Next ></button>
+        </div>
+        <div id="calendar" class="h-64"></div>
+      </div>
+
+      <!-- Top Tasks Chart -->
+      <div class="lg:col-span-12 bg-white rounded-xl shadow-sm p-6">
+        <h3 class="text-lg font-semibold mb-4">5 อันดับ Tasks ที่ทำได้ดีที่สุด และ แย่ที่สุด</h3>
+        <p class="text-sm text-gray-600 mb-4">
+          แสดงผลการ train ที่ดีที่สุดและแย่ที่สุด
+        </p>
+        <div class="h-80">
+          <canvas id="topTasksChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Latest Training Activity -->
+      <div id="latest-activity" class="lg:col-span-12 bg-white rounded-xl shadow-sm p-6">
+        <div class="flex justify-between items-center mb-6">
+          <h3 class="text-lg font-semibold">การฝึกครั้งล่าสุด</h3>
+          <button id="see-all-button" class="text-sm text-primary-600">See All</button>
+        </div>
+        <div id="activity-list" class="space-y-4"></div>
+      </div>
+
+    </section>
+  </main>
+
+  <script src="./js/student/init-mock-data.js"></script>
+  <script src="./js/student/summary.js"></script>
+  <script src="./js/student/setup.js"></script>
+
+</body>
+</html>
