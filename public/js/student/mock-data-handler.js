@@ -1,18 +1,3 @@
-// Global variable to store mock data
-let mockDataSessions = [];
-
-// Initialize mock data for an arbitrary number of sessions
-const initMockData = async (totalSessions = 10, templateList = [], templateColorMap = {}, subjectId, subjectName) => {
-  mockDataSessions = await Promise.all(
-    Array.from({ length: totalSessions }, (_, i) => {
-      const progressLevel = Math.ceil(((i + 1) / totalSessions) * 10);
-      return fetchCSVAndGenerateMockData(progressLevel, totalSessions, templateList, templateColorMap, subjectId, subjectName);
-    })
-  );
-
-  console.log(mockDataSessions)
-};
-
 // Function to parse CSV into JSON
 const parseCSV = (csvText) => {
   const lines = csvText.split("\n").filter(line => line.trim());
