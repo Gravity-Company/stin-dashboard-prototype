@@ -22,17 +22,14 @@ function renderRecommendedSessions(sessions, maxSessions = 10) {
   if (remainingDaysEl) remainingDaysEl.textContent = remainingDays;
 }
 
-
 /**
  * ============================================================================
  * Renders the focus task list (lowest scoring tasks) for a given template.
  * ============================================================================
  */
-function renderFocusTaskList(scenario) {
+function renderFocusTaskList(filteredSessions) {
   const taskListElement = document.getElementById("focusTaskList");
   if (!taskListElement) return;
-
-  const filteredSessions = filterSessionDataByScenario(scenario);
 
   const { topWorst } = getTopTasks(filteredSessions);
 

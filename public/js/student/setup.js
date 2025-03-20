@@ -190,7 +190,12 @@ async function initializeSubject(subjectPath, sessionCount = 10) {
     renderProgressChart(allTasks);
     renderPerformanceChart(mockDataSessions);
     renderRecommendedSessions(mockDataSessions, sessionCount);
-    renderFocusTaskList("all");
+
+    const defaultScenario = "all";
+    const filteredSessions = filterSessionDataByScenario(defaultScenario);
+
+    renderFocusTaskList(filteredSessions);
+    renderTimeImprovementChart(filteredSessions, scenarioColors);
 
     // renderTimeImprovementChart(mockDataSessions);
     // renderTopTasksChart(mockDataSessions);
