@@ -6,11 +6,11 @@ let performanceChartInstance = null;
  * Public: Render Line Chart for Performance Progress
  * ============================================================================
  */
-function renderPerformanceChart() {
-  if (!Array.isArray(mockDataSessions) || mockDataSessions.length === 0) return;
+function renderPerformanceChart(sessionData) {
+  if (!Array.isArray(sessionData) || sessionData.length === 0) return;
 
-  const chartData = getPerformanceChartData(mockDataSessions);
-  const chartConfig = getPerformanceChartConfig(chartData, mockDataSessions);
+  const chartData = getPerformanceChartData(sessionData);
+  const chartConfig = getPerformanceChartConfig(chartData, sessionData);
 
   // Destroy previous chart if it exists
   if (performanceChartInstance) {
