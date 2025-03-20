@@ -59,7 +59,7 @@ function createOption(value, label) {
  */
 function filterSessionDataByScenario(scenarioValue) {
   if (scenarioValue === "all") return mockDataSessions;
-  return mockDataSessions.filter(session => session.scenario === scenarioValue);
+  return mockDataSessions.filter(session => session.scenarioPath === scenarioValue);
 }
 
 /**
@@ -139,7 +139,8 @@ async function renderScenarioDropdown(subjectPath) {
  */
 
 // Store globally for filtering
-let mockDataSessions = [];
+const mockDataSessions = [];
+const globalScenarioColors = {};
 
 /**
  * Generates mock session data and stores it globally.
@@ -163,7 +164,7 @@ async function initializeMockSessionData(sessionCount, scenarioPaths, colorMap, 
     console.log(`Session ${i + 1}/${sessionCount} initialized`, session);
   }
 
-  mockDataSessions = sessions;
+  mockDataSessions.push(...sessions);
   console.log("All mock sessions initialized.");
 }
 
@@ -180,9 +181,11 @@ async function initializeSubject(subjectPath, sessionCount = 10) {
       subjectName
     } = await loadSubjectData(subjectPath);
 
+    Object.assign(globalScenarioColors, scenarioColors);
+
     renderSubjectHeader(subjectName);
     await renderScenarioDropdown(subjectPath);
-    await initializeMockSessionData(sessionCount, scenarioPaths, scenarioColors, subjectId, subjectName);
+    await initializeMockSessionData(sessionCount, scenarioPaths, globalScenarioColors, subjectId, subjectName);
 
     const { allTasks } = await fetchTaskList(csvListPath);
 
@@ -190,17 +193,15 @@ async function initializeSubject(subjectPath, sessionCount = 10) {
     renderProgressChart(allTasks);
     renderPerformanceChart(mockDataSessions);
     renderRecommendedSessions(mockDataSessions, sessionCount);
+    renderFocusTaskList(mockDataSessions);
 
     const defaultScenario = "all";
     const filteredSessions = filterSessionDataByScenario(defaultScenario);
 
-    renderFocusTaskList(filteredSessions);
-
     // Individual Scenario Data (effected by scenarioFilter)
-    renderTimeImprovementChart(filteredSessions, scenarioColors);
-    renderCalendar(mockDataSessions);
-
-    // renderTopTasksChart(mockDataSessions);
+    renderTimeImprovementChart(filteredSessions, globalScenarioColors);
+    renderCalendar(filteredSessions);
+    renderTopTasksChart(filteredSessions);
 
     console.log(`Subject initialized: ${subjectPath}`);
   } catch (error) {
@@ -263,8 +264,9 @@ function attachEventHandlers() {
     const filteredSessions = filterSessionDataByScenario(selectedScenario);
 
     // TODO: Update visualizations with filtered data
-    // renderTimeImprovementChart(filteredSessions);
-    // renderTopTasksChart(filteredSessions);
+    renderTimeImprovementChart(filteredSessions, globalScenarioColors);
+    renderCalendar(filteredSessions);
+    renderTopTasksChart(filteredSessions);
   });
 }
 
