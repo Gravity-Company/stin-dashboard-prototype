@@ -262,7 +262,8 @@ function attachEventHandlers() {
 
   scenarioDropdown.addEventListener("change", (event) => {
     const selectedScenario = event.target.value;
-    const filteredSessions = filterSessionDataByScenario(selectedScenario);
+    // not so sure that why member of mockDataSessions is reversed at this step
+    const filteredSessions = filterSessionDataByScenario(selectedScenario).reverse();
 
     // TODO: Update visualizations with filtered data
     renderTimeImprovementChart(filteredSessions, globalScenarioColors);
