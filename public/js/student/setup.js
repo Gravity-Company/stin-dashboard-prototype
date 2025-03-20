@@ -202,6 +202,7 @@ async function initializeSubject(subjectPath, sessionCount = 10) {
     renderTimeImprovementChart(filteredSessions, globalScenarioColors);
     renderCalendar(filteredSessions);
     renderTopTasksChart(filteredSessions);
+    renderActivityList(filteredSessions);
 
     console.log(`Subject initialized: ${subjectPath}`);
   } catch (error) {
@@ -267,6 +268,7 @@ function attachEventHandlers() {
     renderTimeImprovementChart(filteredSessions, globalScenarioColors);
     renderCalendar(filteredSessions);
     renderTopTasksChart(filteredSessions);
+    renderActivityList(filteredSessions);
   });
 }
 
