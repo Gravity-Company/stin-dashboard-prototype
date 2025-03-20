@@ -5,7 +5,7 @@
  */
 
 /**
- * Fetch JSON data from a URL.
+ * Fetches JSON data from a given URL.
  */
 async function fetchJSON(url) {
   const response = await fetch(url);
@@ -16,7 +16,7 @@ async function fetchJSON(url) {
 }
 
 /**
- * Fetch plain text from a URL.
+ * Fetches plain text data from a given URL.
  */
 async function fetchText(url) {
   const response = await fetch(url);
@@ -27,7 +27,7 @@ async function fetchText(url) {
 }
 
 /**
- * Generate a random RGB color string.
+ * Generates a random RGB color string.
  */
 function generateRandomRGB() {
   const rand = () => Math.floor(Math.random() * 256);
@@ -35,18 +35,17 @@ function generateRandomRGB() {
 }
 
 /**
- * Create a color map for all scenario files.
+ * Maps each scenario path to a unique RGB color.
  */
-function getScenarioColorMap(scenarioPaths) {
-  const colorMap = {};
-  for (const path of scenarioPaths) {
-    colorMap[path] = generateRandomRGB();
-  }
-  return colorMap;
+function createScenarioColorMap(scenarioPaths) {
+  return scenarioPaths.reduce((map, path) => {
+    map[path] = generateRandomRGB();
+    return map;
+  }, {});
 }
 
 /**
- * Create a single <option> element for a <select>.
+ * Creates an <option> element for dropdown menus.
  */
 function createOption(value, label) {
   const option = document.createElement("option");
@@ -56,7 +55,7 @@ function createOption(value, label) {
 }
 
 /**
- * Return filtered mock sessions by scenario.
+ * Filters mock session data by scenario value.
  */
 function filterSessionDataByScenario(scenarioValue) {
   if (scenarioValue === "all") return mockDataSessions;
@@ -65,27 +64,26 @@ function filterSessionDataByScenario(scenarioValue) {
 
 /**
  * =============================================================================
- * SECTION 2: Subject Data
+ * SECTION 2: Subject Data Loading
  * =============================================================================
  */
 
+/**
+ * Loads subject-related data including CSV and scenario paths.
+ */
 async function loadSubjectData(subjectPath) {
   const fileList = await fetchJSON(`${subjectPath}/file_list.json`);
   const csvListPath = `${subjectPath}/task_list.csv`;
 
-  // lookup file via /:subject/:scenario/ dir
-  const scenarioFiles = fileList.map(name => `${subjectPath}/scenarios/${name}`);
-
-  const scenarioColors = getScenarioColorMap(scenarioFiles);
-  // const rawCSV = await fetchText(csvListPath);
-  // const parsedCSV = parseCSV(rawCSV); // external
+  const scenarioPaths = fileList.map(file => `${subjectPath}/scenarios/${file}`);
+  const scenarioColors = createScenarioColorMap(scenarioPaths);
 
   const subjectId = `SUBJECT_${subjectPath.split('/').pop().toUpperCase()}`;
   const subjectName = subjectNames[subjectPath];
 
   return {
     csvListPath,
-    scenarioFiles,
+    scenarioPaths,
     scenarioColors,
     subjectId,
     subjectName
@@ -99,41 +97,38 @@ async function loadSubjectData(subjectPath) {
  */
 
 /**
- * Set subject name in header.
+ * Updates the subject name in the header area.
  */
-function renderSubjectHeader(name) {
+function renderSubjectHeader(subjectName) {
   const header = document.getElementById("subject-header");
-  if (header) {
-    const h1 = header.querySelector("h1");
-    if (h1) h1.textContent = name;
+  const title = header?.querySelector("h1");
+
+  if (title) {
+    title.textContent = subjectName;
   }
 }
 
 /**
- * Populate the scenario filter dropdown.
+ * Populates the scenario filter dropdown menu.
  */
-async function renderScenarioDropdown(scenarioPath) {
+async function renderScenarioDropdown(subjectPath) {
   const dropdown = document.getElementById("scenarioFilter");
   dropdown.innerHTML = "";
 
   try {
-    const files = await fetchJSON(`${scenarioPath}/file_list.json`);
-    dropdown.appendChild(createOption("all", "All Scenario"));
+    const fileList = await fetchJSON(`${subjectPath}/file_list.json`);
 
-    files.forEach((file) => {
-      const scenarioFilePath = `${scenarioPath}/scenarios/${file}`;
-      const scenarioName = file
-        .split("/")
-        .pop()
-        .replace(".csv", "")
-        .replace(/_/g, " ")
+    dropdown.appendChild(createOption("all", "All Scenarios"));
 
-      dropdown.appendChild(createOption(scenarioFilePath, scenarioName));
+    fileList.forEach(file => {
+      const scenarioPath = `${subjectPath}/scenarios/${file}`;
+      const displayName = file.replace(".csv", "").replace(/_/g, " ");
+      dropdown.appendChild(createOption(scenarioPath, displayName));
     });
 
     dropdown.value = "all";
   } catch (error) {
-    console.error("Failed to populate scenario dropdown:", error);
+    console.error("Error populating scenario dropdown:", error);
   }
 }
 
@@ -143,40 +138,43 @@ async function renderScenarioDropdown(scenarioPath) {
  * =============================================================================
  */
 
+// Store globally for filtering
 let mockDataSessions = [];
 
 /**
- * Generate mock sessions and store globally.
+ * Generates mock session data and stores it globally.
  */
-async function initializeMockSessionData(count, scenarios, colorMap, subjectId, subjectName) {
+async function initializeMockSessionData(sessionCount, scenarioPaths, colorMap, subjectId, subjectName) {
   const sessions = [];
 
-  for (let i = 0; i < count; i++) {
-    const progress = Math.ceil(((i + 1) / count) * 10);
+  for (let i = 0; i < sessionCount; i++) {
+    const progress = Math.ceil(((i + 1) / sessionCount) * 10);
+
     const session = await fetchCSVAndGenerateMockData(
       progress,
-      count,
-      scenarios,
+      sessionCount,
+      scenarioPaths,
       colorMap,
       subjectId,
       subjectName
     );
+
     sessions.push(session);
-    console.log(session);
+    console.log(`Session ${i + 1}/${sessionCount} initialized`, session);
   }
 
   mockDataSessions = sessions;
-  console.log("Mock sessions initialized:", sessions);
+  console.log("All mock sessions initialized.");
 }
 
 /**
- * Handle full subject load (data + UI).
+ * Initializes the dashboard for a selected subject.
  */
 async function initializeSubject(subjectPath, sessionCount = 10) {
   try {
     const {
       csvListPath,
-      scenarioFiles,
+      scenarioPaths,
       scenarioColors,
       subjectId,
       subjectName
@@ -184,19 +182,23 @@ async function initializeSubject(subjectPath, sessionCount = 10) {
 
     renderSubjectHeader(subjectName);
     await renderScenarioDropdown(subjectPath);
-    await initializeMockSessionData(sessionCount, scenarioFiles, scenarioColors, subjectId, subjectName);
+    await initializeMockSessionData(sessionCount, scenarioPaths, scenarioColors, subjectId, subjectName);
 
     const { allTasks } = await fetchTaskList(csvListPath);
-    // TODO: render charts from here
 
-    console.log(`Scenario initialized: ${subjectPath}`);
-  } catch (err) {
-    console.error("Failed to initialize scenario:", err);
+    // TODO: Final rendering logic (charts, visuals, etc.)
+    renderProgressChart(allTasks);
+    // renderTimeImprovementChart(mockDataSessions);
+    // renderTopTasksChart(mockDataSessions);
+
+    console.log(`Subject initialized: ${subjectPath}`);
+  } catch (error) {
+    console.error("Failed to initialize subject:", error);
   }
 }
 
 /**
- * Update entire dashboard (used on dropdown change).
+ * Updates the dashboard when a new subject is selected.
  */
 async function updateDashboardForSubject(subjectPath) {
   try {
@@ -207,23 +209,23 @@ async function updateDashboardForSubject(subjectPath) {
 }
 
 /**
- * Initialize dashboard on load.
+ * Initializes the dashboard when the app is loaded.
  */
-async function initializeDashboard(sessionCount = 10) {
+async function initializeDashboard(defaultSessionCount = 10) {
   try {
-    const defaultSubject = document.getElementById("subjectFilter").value;
-    await initializeSubject(defaultSubject, sessionCount);
+    const subjectDropdown = document.getElementById("subjectFilter");
+    const defaultSubject = subjectDropdown.value;
+
+    await initializeSubject(defaultSubject, defaultSessionCount);
 
     const seeAllButton = document.getElementById("see-all-button");
-    if (seeAllButton) {
-      seeAllButton.addEventListener("click", () => {
-        alert("Redirect to full activity history!");
-      });
-    }
+    seeAllButton?.addEventListener("click", () => {
+      alert("Redirect to full activity history!");
+    });
 
-    console.log("Dashboard is ready.");
+    console.log("Dashboard initialized.");
   } catch (error) {
-    console.error("Initial dashboard setup failed:", error);
+    console.error("Dashboard initialization failed:", error);
   }
 }
 
@@ -233,6 +235,9 @@ async function initializeDashboard(sessionCount = 10) {
  * =============================================================================
  */
 
+/**
+ * Attaches UI interaction event handlers.
+ */
 function attachEventHandlers() {
   const subjectDropdown = document.getElementById("subjectFilter");
   const scenarioDropdown = document.getElementById("scenarioFilter");
@@ -244,10 +249,11 @@ function attachEventHandlers() {
 
   scenarioDropdown.addEventListener("change", (event) => {
     const selectedScenario = event.target.value;
-    const filtered = filterSessionDataByScenario(selectedScenario);
+    const filteredSessions = filterSessionDataByScenario(selectedScenario);
 
-    // renderTimeImprovementChart(filtered);
-    // renderTopTasksChart(filtered);
+    // TODO: Update visualizations with filtered data
+    // renderTimeImprovementChart(filteredSessions);
+    // renderTopTasksChart(filteredSessions);
   });
 }
 
