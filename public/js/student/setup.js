@@ -188,6 +188,7 @@ async function initializeSubject(subjectPath, sessionCount = 10) {
 
     // TODO: Final rendering logic (charts, visuals, etc.)
     renderProgressChart(allTasks);
+    renderPerformanceChart();
     // renderTimeImprovementChart(mockDataSessions);
     // renderTopTasksChart(mockDataSessions);
 

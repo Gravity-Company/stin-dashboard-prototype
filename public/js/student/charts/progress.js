@@ -1,10 +1,11 @@
+// Global chart reference
+let progressChartInstance = null;
+
 /**
  * ============================================================================
  * Renders the progress doughnut chart showing how many tasks have been completed.
  * ============================================================================
  */
-
-let progressChartInstance = null; // Global chart reference
 
 function renderProgressChart(allTasks) {
   if (!Array.isArray(allTasks) || allTasks.length === 0) return;
