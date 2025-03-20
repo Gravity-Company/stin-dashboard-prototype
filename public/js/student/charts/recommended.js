@@ -3,12 +3,12 @@
  * Updates UI elements showing total sessions and estimated remaining days.
  * ============================================================================
  */
-function renderRecommendedSessions(sessions, maxSessions = 10) {
-  if (!Array.isArray(sessions) || sessions.length === 0) return;
+function renderRecommendedSessions(sessionData, maxSessions = 10) {
+  if (!Array.isArray(sessionData) || sessionData.length === 0) return;
 
-  const totalSessions = sessions.length;
+  const totalSessions = sessionData.length;
 
-  const lastSession = sessions[sessions.length - 1];
+  const lastSession = sessionData[sessionData.length - 1];
   const lastDate = new Date(lastSession.date);
   const today = new Date();
 

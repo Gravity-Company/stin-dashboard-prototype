@@ -195,9 +195,11 @@ async function initializeSubject(subjectPath, sessionCount = 10) {
     const filteredSessions = filterSessionDataByScenario(defaultScenario);
 
     renderFocusTaskList(filteredSessions);
-    renderTimeImprovementChart(filteredSessions, scenarioColors);
 
-    // renderTimeImprovementChart(mockDataSessions);
+    // Individual Scenario Data (effected by scenarioFilter)
+    renderTimeImprovementChart(filteredSessions, scenarioColors);
+    renderCalendar(mockDataSessions);
+
     // renderTopTasksChart(mockDataSessions);
 
     console.log(`Subject initialized: ${subjectPath}`);
