@@ -35,11 +35,11 @@ function generateRandomRGB() {
 }
 
 /**
- * Create a color map for all template files.
+ * Create a color map for all scenario files.
  */
-function getTemplateColorMap(templatePaths) {
+function getScenarioColorMap(scenarioPaths) {
   const colorMap = {};
-  for (const path of templatePaths) {
+  for (const path of scenarioPaths) {
     colorMap[path] = generateRandomRGB();
   }
   return colorMap;
@@ -56,38 +56,37 @@ function createOption(value, label) {
 }
 
 /**
- * Return filtered mock sessions by template.
+ * Return filtered mock sessions by scenario.
  */
-function filterSessionsByTemplate(templateValue) {
-  if (templateValue === "all") return mockDataSessions;
-  return mockDataSessions.filter(session => session.template === templateValue);
+function filterSessionDataByScenario(scenarioValue) {
+  if (scenarioValue === "all") return mockDataSessions;
+  return mockDataSessions.filter(session => session.scenario === scenarioValue);
 }
 
 /**
  * =============================================================================
- * SECTION 2: Scenario Data
+ * SECTION 2: Subject Data
  * =============================================================================
  */
 
-async function loadScenarioData(scenarioPath) {
-  const fileList = await fetchJSON(`${scenarioPath}/file_list.json`);
-  const csvListPath = `${scenarioPath}/task_list.csv`;
+async function loadSubjectData(subjectPath) {
+  const fileList = await fetchJSON(`${subjectPath}/file_list.json`);
+  const csvListPath = `${subjectPath}/task_list.csv`;
 
-  const templateFiles = fileList
-    .filter(name => name !== "task_list.csv")
-    .map(name => `${scenarioPath}/${name}`);
+  // lookup file via /:subject/:scenario/ dir
+  const scenarioFiles = fileList.map(name => `${subjectPath}/scenarios/${name}`);
 
-  const templateColors = getTemplateColorMap(templateFiles);
-  const rawCSV = await fetchText(csvListPath);
-  const parsedCSV = parseCSV(rawCSV); // external
+  const scenarioColors = getScenarioColorMap(scenarioFiles);
+  // const rawCSV = await fetchText(csvListPath);
+  // const parsedCSV = parseCSV(rawCSV); // external
 
-  const subjectId = `SUBJ${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
-  const subjectName = scenarioNames[scenarioPath];
+  const subjectId = `SUBJECT_${subjectPath.split('/').pop().toUpperCase()}`;
+  const subjectName = subjectNames[subjectPath];
 
   return {
     csvListPath,
-    templateFiles,
-    templateColors,
+    scenarioFiles,
+    scenarioColors,
     subjectId,
     subjectName
   };
@@ -111,26 +110,30 @@ function renderSubjectHeader(name) {
 }
 
 /**
- * Populate the template filter dropdown.
+ * Populate the scenario filter dropdown.
  */
-async function renderTemplateDropdown(scenarioPath) {
-  const dropdown = document.getElementById("templateFilter");
+async function renderScenarioDropdown(scenarioPath) {
+  const dropdown = document.getElementById("scenarioFilter");
   dropdown.innerHTML = "";
 
   try {
     const files = await fetchJSON(`${scenarioPath}/file_list.json`);
-    const templates = files.filter(file => file !== "task_list.csv");
+    dropdown.appendChild(createOption("all", "All Scenario"));
 
-    dropdown.appendChild(createOption("all", "All Templates"));
+    files.forEach((file) => {
+      const scenarioFilePath = `${scenarioPath}/scenarios/${file}`;
+      const scenarioName = file
+        .split("/")
+        .pop()
+        .replace(".csv", "")
+        .replace(/_/g, " ")
 
-    templates.forEach((file, index) => {
-      const fullPath = `${scenarioPath}/${file}`;
-      dropdown.appendChild(createOption(fullPath, `Template ${index + 1}`));
+      dropdown.appendChild(createOption(scenarioFilePath, scenarioName));
     });
 
     dropdown.value = "all";
   } catch (error) {
-    console.error("Failed to populate template dropdown:", error);
+    console.error("Failed to populate scenario dropdown:", error);
   }
 }
 
@@ -145,7 +148,7 @@ let mockDataSessions = [];
 /**
  * Generate mock sessions and store globally.
  */
-async function initializeMockSessions(count, templates, colorMap, subjectId, subjectName) {
+async function initializeMockSessionData(count, scenarios, colorMap, subjectId, subjectName) {
   const sessions = [];
 
   for (let i = 0; i < count; i++) {
@@ -153,12 +156,13 @@ async function initializeMockSessions(count, templates, colorMap, subjectId, sub
     const session = await fetchCSVAndGenerateMockData(
       progress,
       count,
-      templates,
+      scenarios,
       colorMap,
       subjectId,
       subjectName
     );
     sessions.push(session);
+    console.log(session);
   }
 
   mockDataSessions = sessions;
@@ -166,25 +170,26 @@ async function initializeMockSessions(count, templates, colorMap, subjectId, sub
 }
 
 /**
- * Handle full scenario load (data + UI).
+ * Handle full subject load (data + UI).
  */
-async function initializeScenario(scenarioPath, sessionCount = 10) {
+async function initializeSubject(subjectPath, sessionCount = 10) {
   try {
     const {
       csvListPath,
-      templateFiles,
-      templateColors,
+      scenarioFiles,
+      scenarioColors,
       subjectId,
       subjectName
-    } = await loadScenarioData(scenarioPath);
+    } = await loadSubjectData(subjectPath);
 
     renderSubjectHeader(subjectName);
-    await renderTemplateDropdown(scenarioPath);
-    await initializeMockSessions(sessionCount, templateFiles, templateColors, subjectId, subjectName);
+    await renderScenarioDropdown(subjectPath);
+    await initializeMockSessionData(sessionCount, scenarioFiles, scenarioColors, subjectId, subjectName);
 
-    const { allTasks } = await fetchTaskList(csvListPath); // optional for now
+    const { allTasks } = await fetchTaskList(csvListPath);
+    // TODO: render charts from here
 
-    console.log(`Scenario initialized: ${scenarioPath}`);
+    console.log(`Scenario initialized: ${subjectPath}`);
   } catch (err) {
     console.error("Failed to initialize scenario:", err);
   }
@@ -193,9 +198,9 @@ async function initializeScenario(scenarioPath, sessionCount = 10) {
 /**
  * Update entire dashboard (used on dropdown change).
  */
-async function updateDashboardForScenario(scenarioPath) {
+async function updateDashboardForSubject(subjectPath) {
   try {
-    await initializeScenario(scenarioPath);
+    await initializeSubject(subjectPath);
   } catch (error) {
     console.error("Dashboard update failed:", error);
   }
@@ -206,8 +211,8 @@ async function updateDashboardForScenario(scenarioPath) {
  */
 async function initializeDashboard(sessionCount = 10) {
   try {
-    const defaultScenario = document.getElementById("scenarioFilter").value;
-    await initializeScenario(defaultScenario, sessionCount);
+    const defaultSubject = document.getElementById("subjectFilter").value;
+    await initializeSubject(defaultSubject, sessionCount);
 
     const seeAllButton = document.getElementById("see-all-button");
     if (seeAllButton) {
@@ -229,17 +234,17 @@ async function initializeDashboard(sessionCount = 10) {
  */
 
 function attachEventHandlers() {
+  const subjectDropdown = document.getElementById("subjectFilter");
   const scenarioDropdown = document.getElementById("scenarioFilter");
-  const templateDropdown = document.getElementById("templateFilter");
+
+  subjectDropdown.addEventListener("change", (event) => {
+    const selectedSubject = event.target.value;
+    updateDashboardForSubject(selectedSubject);
+  });
 
   scenarioDropdown.addEventListener("change", (event) => {
     const selectedScenario = event.target.value;
-    updateDashboardForScenario(selectedScenario);
-  });
-
-  templateDropdown.addEventListener("change", (event) => {
-    const selectedTemplate = event.target.value;
-    const filtered = filterSessionsByTemplate(selectedTemplate);
+    const filtered = filterSessionDataByScenario(selectedScenario);
 
     // renderTimeImprovementChart(filtered);
     // renderTopTasksChart(filtered);

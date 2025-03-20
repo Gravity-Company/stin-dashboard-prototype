@@ -1,22 +1,11 @@
-// Array ของชื่อ Scenario
-const scenarioNames = {
-  "./data/scenario1": "การปั๊มหัวใจ CPR",
-  "./data/scenario2": "การดูแลผู้คลอดที่มีภาวะตกเลือด",
-  "./data/scenario3": "การทำคลอดปกติ",
-  "./data/scenario4": "การให้สารละลายทางหลอดเลือดดำ",
-  "./data/scenario5": "การให้อาหารทางสาย",
-  "./data/scenario6": "การดูแลผู้ป่วยจิตเวช",
-  "./data/scenario7": "การซักประวัติและการตรวจร่างกาย",
-}
-
 // Mock data สำหรับ progress
-const progressData = [80, 65, 90, 50, 75, 40, 85]; // Example progress (%) สำหรับแต่ละ scenario
+const progressData = [80, 65, 90, 50, 75, 40, 85]; // Example progress (%) สำหรับแต่ละ subject
 
 // Chart.js configuration
 const config = {
   type: "bar",
   data: {
-    labels: Object.values(scenarioNames),
+    labels: Object.values(subjectNames),
     datasets: [
       {
         label: "Progress (%)",
@@ -60,5 +49,5 @@ const config = {
 };
 
 // Render the chart
-const ctx = document.getElementById("scenarioProgressChart").getContext("2d");
+const ctx = document.getElementById("subjectProgressChart").getContext("2d");
 new Chart(ctx, config);
