@@ -5,46 +5,6 @@
  */
 
 /**
- * Parses a CSV string into an array of objects.
- */
-function parseCSV(csvText) {
-  const lines = csvText.split("\n").filter(line => line.trim());
-  if (lines.length === 0) return [];
-
-  const headers = lines[0].split(",").map(h => h.trim());
-  return lines.slice(1).map(line => parseCSVLine(line, headers));
-}
-
-/**
- * Parses a single CSV line using the given headers.
- */
-function parseCSVLine(line, headers) {
-  const values = [];
-  let current = "";
-  let insideQuotes = false;
-
-  for (let char of line) {
-    if (char === '"') {
-      insideQuotes = !insideQuotes;
-    } else if (char === "," && !insideQuotes) {
-      values.push(current.trim());
-      current = "";
-    } else {
-      current += char;
-    }
-  }
-
-  values.push(current.trim());
-
-  return Object.fromEntries(
-    headers.map((header, i) => [
-      header,
-      isNaN(values[i]) ? values[i] || "" : Number(values[i])
-    ])
-  );
-}
-
-/**
  * Generates a randomized, progress-weighted completion time.
  */
 function generateCompletionTime(progressLevel, totalSessions) {
@@ -60,6 +20,35 @@ function generateCompletionTime(progressLevel, totalSessions) {
  * Public: Generate Mock Session from CSV
  * =============================================================================
  */
+
+/**
+ * Generates mock session data and stores it globally.
+ */
+async function initializeMockSessionData(sessionCount, scenarioPaths, colorMap, subjectId, subjectName) {
+  const sessions = [];
+
+  for (let i = 0; i < sessionCount; i++) {
+    const progress = Math.ceil(((i + 1) / sessionCount) * 10);
+
+    const session = await fetchCSVAndGenerateMockData(
+      progress,
+      sessionCount,
+      scenarioPaths,
+      colorMap,
+      subjectId,
+      subjectName
+    );
+
+    sessions.push(session);
+
+    console.log(`Session ${i + 1}/${sessionCount} initialized`, session);
+  }
+
+  console.log("All mock sessions initialized.");
+  
+  return sessions;
+}
+
 async function fetchCSVAndGenerateMockData(progressLevel, totalSessions, scenarioList, scenarioColorMap, subjectId, subjectName) {
   try {
     const selectedScenario = scenarioList[Math.floor(Math.random() * scenarioList.length)];
@@ -109,34 +98,6 @@ async function fetchCSVAndGenerateMockData(progressLevel, totalSessions, scenari
 
   } catch (error) {
     console.error("Error generating mock session data:", error);
-    throw error;
-  }
-}
-
-/**
- * =============================================================================
- * Public: Fetch and Structure Task List from CSV
- * =============================================================================
- */
-async function fetchTaskList(csvListPath) {
-  try {
-    const response = await fetch(csvListPath);
-    if (!response.ok) throw new Error("Failed to fetch task list CSV file.");
-
-    const csvText = await response.text();
-    const allTasks = parseCSV(csvText);
-
-    const tasksByStepId = allTasks.reduce((map, task) => {
-      const step = task.stepId;
-      if (!map[step]) map[step] = [];
-      map[step].push(task);
-      return map;
-    }, {});
-
-    return { allTasks, tasksByStepId };
-
-  } catch (error) {
-    console.error("Error fetching task list:", error);
     throw error;
   }
 }

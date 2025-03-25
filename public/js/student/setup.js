@@ -4,7 +4,7 @@
  * =============================================================================
  */
 
-const ENABLE_MOCK_DATA = true;
+const ENABLE_MOCK_DATA = false;
 const ENABLE_GEN_CSV_FROM_MOCK_DATA = false;
 
 const student_profile = {
@@ -130,6 +130,14 @@ function renderSubjectHeader(subjectName) {
 }
 
 /**
+ * Updates student name.
+ */
+function renderStudentName() {
+  const name = document.getElementById("user-profile");
+  name.textContent = `${student_profile.firstName} ${student_profile.lastName}`;
+}
+
+/**
  * Populates the scenario filter dropdown menu.
  */
 async function renderScenarioDropdown(subjectPath) {
@@ -164,33 +172,6 @@ const mockDataSessions = [];
 const globalScenarioColors = {};
 
 /**
- * Generates mock session data and stores it globally.
- */
-async function initializeMockSessionData(sessionCount, scenarioPaths, colorMap, subjectId, subjectName) {
-  const sessions = [];
-
-  for (let i = 0; i < sessionCount; i++) {
-    const progress = Math.ceil(((i + 1) / sessionCount) * 10);
-
-    const session = await fetchCSVAndGenerateMockData(
-      progress,
-      sessionCount,
-      scenarioPaths,
-      colorMap,
-      subjectId,
-      subjectName
-    );
-
-    sessions.push(session);
-
-    console.log(`Session ${i + 1}/${sessionCount} initialized`, session);
-  }
-
-  mockDataSessions.push(...sessions);
-  console.log("All mock sessions initialized.");
-}
-
-/**
  * Initializes the dashboard for a selected subject.
  */
 async function initializeSubject(subjectPath, sessionCount = 10) {
@@ -206,8 +187,18 @@ async function initializeSubject(subjectPath, sessionCount = 10) {
     Object.assign(globalScenarioColors, scenarioColors);
 
     renderSubjectHeader(subjectName);
+    renderStudentName();
+    
     await renderScenarioDropdown(subjectPath);
-    await initializeMockSessionData(sessionCount, scenarioPaths, globalScenarioColors, subjectId, subjectName);
+    
+    // Generate mock data
+    if (ENABLE_MOCK_DATA) {
+      const sessions = await initializeMockSessionData(sessionCount, scenarioPaths, globalScenarioColors, subjectId, subjectName);
+      mockDataSessions.push(...sessions);
+    } else {
+      const sessions = await fetchCSVSessionData(globalScenarioColors, subjectId, subjectName);
+      mockDataSessions.push(...sessions);
+    }
 
     // Generate CSV files from mock data
     if (ENABLE_GEN_CSV_FROM_MOCK_DATA) {
