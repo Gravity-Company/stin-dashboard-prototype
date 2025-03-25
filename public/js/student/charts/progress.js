@@ -7,14 +7,14 @@ let progressChartInstance = null;
  * ============================================================================
  */
 
-function renderProgressChart(allTasks) {
+function renderProgressChart(allTasks, sessionData) {
   if (!Array.isArray(allTasks) || allTasks.length === 0) return;
 
   const totalTasks = new Set(allTasks.map(task => task.taskId));
   const completedTasks = new Set();
 
   // Collect task IDs from sessions with score > 0
-  for (const session of mockDataSessions) {
+  for (const session of sessionData) {
     for (const task of session.tasks) {
       if (task.obtainedScore > 0) {
         completedTasks.add(task.taskId);

@@ -4,6 +4,16 @@
  * =============================================================================
  */
 
+const ENABLE_MOCK_DATA = true;
+const ENABLE_GEN_CSV_FROM_MOCK_DATA = false;
+
+const student_profile = {
+  id: '68200988',
+  firstName: 'John',
+  lastName: 'Doe',
+  class: '1A',
+}
+
 /**
  * Fetches JSON data from a given URL.
  */
@@ -63,6 +73,17 @@ function filterSessionDataByScenario(scenarioValue) {
 }
 
 /**
+ * Generate CSV from mock data.
+ */
+function generateCSVFromMockData(dataSessions, profile) {
+  dataSessions.forEach((session, i) => {
+    const { subjectId, scenarioId, tasks } = session
+    const fileName = `${i+1}_studentId_${profile.id}_subject_${subjectId}_scenario_${scenarioId}_${formatDateForFilenameUTC7()}.csv`;
+    generateCsvFromTasks(tasks, fileName);
+  });
+}
+
+/**
  * =============================================================================
  * SECTION 2: Subject Data Loading
  * =============================================================================
@@ -78,7 +99,7 @@ async function loadSubjectData(subjectPath) {
   const scenarioPaths = fileList.map(file => `${subjectPath}/scenarios/${file}`);
   const scenarioColors = createScenarioColorMap(scenarioPaths);
 
-  const subjectId = `SUBJECT_${subjectPath.split('/').pop().toUpperCase()}`;
+  const subjectId = `${subjectPath.split('/').pop().toUpperCase()}`;
   const subjectName = subjectNames[subjectPath];
 
   return {
@@ -161,6 +182,7 @@ async function initializeMockSessionData(sessionCount, scenarioPaths, colorMap, 
     );
 
     sessions.push(session);
+
     console.log(`Session ${i + 1}/${sessionCount} initialized`, session);
   }
 
@@ -187,10 +209,15 @@ async function initializeSubject(subjectPath, sessionCount = 10) {
     await renderScenarioDropdown(subjectPath);
     await initializeMockSessionData(sessionCount, scenarioPaths, globalScenarioColors, subjectId, subjectName);
 
+    // Generate CSV files from mock data
+    if (ENABLE_GEN_CSV_FROM_MOCK_DATA) {
+      generateCSVFromMockData(mockDataSessions, student_profile);
+    }
+
     const { allTasks } = await fetchTaskList(csvListPath);
 
     // TODO: Final rendering logic (charts, visuals, etc.)
-    renderProgressChart(allTasks);
+    renderProgressChart(allTasks, mockDataSessions);
     renderPerformanceChart(mockDataSessions);
     renderRecommendedSessions(mockDataSessions, sessionCount);
     renderFocusTaskList(mockDataSessions);
