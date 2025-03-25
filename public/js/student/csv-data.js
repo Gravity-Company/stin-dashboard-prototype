@@ -7,7 +7,7 @@
 async function fetchCSVSessionData(scenarioColorMap, subjectId, subjectName) {
   try {
     // FIXME: Hardcoded file path & related data
-    const filePath = './data/subject3/csv/';
+    const filePath = './data/subject3/csv/studentId_68200988/';
     const fileList = [
       '1_studentId_68200988_subject_SUBJECT3_scenario_SCENARIO_2_20250325_151618_UTC+7.csv',
       '2_studentId_68200988_subject_SUBJECT3_scenario_SCENARIO_2_20250325_151618_UTC+7.csv',

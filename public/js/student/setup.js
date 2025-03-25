@@ -186,9 +186,10 @@ async function initializeSubject(subjectPath, sessionCount = 10) {
 
     Object.assign(globalScenarioColors, scenarioColors);
 
+    // User profile setup
     renderSubjectHeader(subjectName);
     renderStudentName();
-    
+
     await renderScenarioDropdown(subjectPath);
     
     // Generate mock data
@@ -281,7 +282,7 @@ function attachEventHandlers() {
   scenarioDropdown.addEventListener("change", (event) => {
     const selectedScenario = event.target.value;
     // not so sure that why member of mockDataSessions is reversed at this step
-    const filteredSessions = filterSessionDataByScenario(selectedScenario).reverse();
+    const filteredSessions = filterSessionDataByScenario(selectedScenario) //.reverse();
 
     // TODO: Update visualizations with filtered data
     renderTimeImprovementChart(filteredSessions, globalScenarioColors);
