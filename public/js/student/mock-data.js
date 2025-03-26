@@ -76,7 +76,7 @@ async function fetchCSVAndGenerateMockData(progressLevel, totalSessions, scenari
     const totalObtainScore = tasks.reduce((sum, t) => sum + t.obtainedScore, 0);
     const fileName = selectedScenario.split("/").pop().replace(".csv", "");
     const scenarioName = fileName.toUpperCase();
-    const scenarioId = `SCENARIO_${fileName.split("_")[0]}`;
+    const scenarioId = `SCENARIO${fileName.split("_")[0]}`;
     const color = scenarioColorMap[selectedScenario] || "rgba(128, 128, 128, 0.8)";
 
     const today = new Date();

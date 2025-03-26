@@ -6,13 +6,22 @@
 
 const ENABLE_MOCK_DATA = false;
 const ENABLE_GEN_CSV_FROM_MOCK_DATA = false;
+const DEFAULT_STUDENT_ID = '68200990';
 
 const student_profile = {
-  id: '68200988',
-  firstName: 'John',
-  lastName: 'Doe',
-  class: '1A',
-}
+  68200988: {
+    id: '68200988',
+    firstName: 'John',
+    lastName: 'Doe',
+    class: '1A',
+  },
+  68200990: {
+    id: '68200990',
+    firstName: 'M',
+    lastName: 'Doe',
+    class: '1A',
+  },
+};
 
 /**
  * Fetches JSON data from a given URL.
@@ -132,9 +141,9 @@ function renderSubjectHeader(subjectName) {
 /**
  * Updates student name.
  */
-function renderStudentName() {
+function renderStudentName(profile) {
   const name = document.getElementById("user-profile");
-  name.textContent = `${student_profile.firstName} ${student_profile.lastName}`;
+  name.textContent = `${profile.firstName} ${profile.lastName}`;
 }
 
 /**
@@ -188,7 +197,7 @@ async function initializeSubject(subjectPath, sessionCount = 10) {
 
     // User profile setup
     renderSubjectHeader(subjectName);
-    renderStudentName();
+    renderStudentName(student_profile[DEFAULT_STUDENT_ID]);
 
     await renderScenarioDropdown(subjectPath);
     
@@ -196,14 +205,14 @@ async function initializeSubject(subjectPath, sessionCount = 10) {
     if (ENABLE_MOCK_DATA) {
       const sessions = await initializeMockSessionData(sessionCount, scenarioPaths, globalScenarioColors, subjectId, subjectName);
       mockDataSessions.push(...sessions);
-    } else {
-      const sessions = await fetchCSVSessionData(globalScenarioColors, subjectId, subjectName);
-      mockDataSessions.push(...sessions);
-    }
 
-    // Generate CSV files from mock data
-    if (ENABLE_GEN_CSV_FROM_MOCK_DATA) {
-      generateCSVFromMockData(mockDataSessions, student_profile);
+      // Generate CSV files from mock data
+      if (ENABLE_GEN_CSV_FROM_MOCK_DATA) {
+        generateCSVFromMockData(mockDataSessions, student_profile[DEFAULT_STUDENT_ID]);
+      }
+    } else {
+      const sessions = await fetchCSVSessionData(globalScenarioColors, subjectId, subjectName, student_profile[DEFAULT_STUDENT_ID].id);
+      mockDataSessions.push(...sessions);
     }
 
     const { allTasks } = await fetchTaskList(csvListPath);
