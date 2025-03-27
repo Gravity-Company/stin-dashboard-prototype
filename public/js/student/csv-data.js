@@ -23,6 +23,24 @@ function getFilePathsByStudentId(studentId) {
     return { filePath, fileList };
   }
 
+  if (studentId === '68200989') {
+    const filePath = './data/subject3/csv/studentId_68200989/';
+    const fileList = [
+      '1_studentId_68200989_subject_SUBJECT3_scenario_SCENARIO1_20250326_194416_UTC+7.csv',
+      '2_studentId_68200989_subject_SUBJECT3_scenario_SCENARIO2_20250326_194416_UTC+7.csv',
+      '3_studentId_68200989_subject_SUBJECT3_scenario_SCENARIO2_20250326_194416_UTC+7.csv',
+      '4_studentId_68200989_subject_SUBJECT3_scenario_SCENARIO1_20250326_194416_UTC+7.csv',
+      '5_studentId_68200989_subject_SUBJECT3_scenario_SCENARIO2_20250326_194416_UTC+7.csv',
+      '6_studentId_68200989_subject_SUBJECT3_scenario_SCENARIO1_20250326_194416_UTC+7.csv',
+      '7_studentId_68200989_subject_SUBJECT3_scenario_SCENARIO1_20250326_194416_UTC+7.csv',
+      '8_studentId_68200989_subject_SUBJECT3_scenario_SCENARIO2_20250326_194416_UTC+7.csv',
+      '9_studentId_68200989_subject_SUBJECT3_scenario_SCENARIO2_20250326_194416_UTC+7.csv',
+      '10_studentId_68200989_subject_SUBJECT3_scenario_SCENARIO1_20250326_194416_UTC+7.csv',
+    ];
+
+    return { filePath, fileList };
+  }
+
   if (studentId === '68200990') {
     const filePath = './data/subject3/csv/studentId_68200990/';
     const fileList = [
@@ -37,6 +55,7 @@ function getFilePathsByStudentId(studentId) {
       '9_studentId_68200990_subject_SUBJECT3_scenario_SCENARIO2_20250326_094747_UTC+7.csv',
       '10_studentId_68200990_subject_SUBJECT3_scenario_SCENARIO1_20250326_094747_UTC+7.csv',
     ];
+
 
     return { filePath, fileList };
   }

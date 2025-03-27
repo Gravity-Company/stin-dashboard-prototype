@@ -6,7 +6,7 @@
 
 const ENABLE_MOCK_DATA = false;
 const ENABLE_GEN_CSV_FROM_MOCK_DATA = false;
-const DEFAULT_STUDENT_ID = '68200990';
+const DEFAULT_STUDENT_ID = '68200989';
 
 const student_profile = {
   68200988: {
@@ -14,13 +14,19 @@ const student_profile = {
     firstName: 'John',
     lastName: 'Doe',
     class: '1A',
+  },  
+  68200989: {
+    id: '68200989',
+    firstName: 'Lone',
+    lastName: 'Le',
+    class: '1A',
   },
   68200990: {
     id: '68200990',
-    firstName: 'M',
-    lastName: 'Doe',
+    firstName: 'Jane',
+    lastName: 'Kane',
     class: '1A',
-  },
+  }
 };
 
 /**
