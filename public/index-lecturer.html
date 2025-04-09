@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lecturer Dashboard</title>
+
+  <link rel="stylesheet" href="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.css" />
+  <script src="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.js"></script>
+
+  <script src="./assets/chart.js"></script>
+  <script src="./assets/tailwind.js"></script>
+  <link href="./assets/googlefont.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Kanit', sans-serif;
+    }
+    #calendar {
+      height: 16rem;
+      max-width: 100%;
+    }
+  </style>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#fff1f1',
+              100: '#ffdfdf',
+              500: '#ff2a2a',
+              600: '#ed1515',
+              700: '#c80d0d',
+            },
+            secondary: {
+              100: '#ededed',
+              200: '#dfdfdf',
+              500: '#878787',
+              600: '#6d6d6d',
+              700: '#5d5d5d',
+            },
+            success: {
+              500: '#4BC0C0',
+            }
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-gray-50">
+  <!-- Header -->
+  <header class="bg-white border-b">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex h-16 justify-between items-center">
+        <h1 class="text-2xl font-bold text-primary-600">STIN</h1>
+        <div class="flex items-center gap-4">
+          <button class="p-2 hover:bg-gray-100 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+          </button>
+          <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+            <span class="text-primary-600 font-medium">A</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- Welcome Section -->
+    <section class="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="md:col-span-2">
+        <h2 class="text-3xl font-bold text-gray-900">ยินดีต้อนรับกลับมา อาจารย์ แกลง</h2>
+        <p class="text-secondary-600">ข้อมูลเกี่ยวกับการฝึกหัดของนักเรียนในรายวิชาต่างๆ</p>
+      </div>
+    </section>
+
+    <!-- Scenario Dropdown -->
+    <section class="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label for="subjectFilter" class="block text-sm font-medium text-gray-700 mb-2">เลือก Subject</label>
+        <select id="subjectFilter" class="block w-full border border-gray-300 rounded-md shadow-sm p-2">
+          <option value="./data/subject1">การปั๊มหัวใจ CPR</option>
+          <option value="./data/subject2">การดูแลผู้คลอดที่มีภาวะตกเลือด</option>
+          <option value="./data/subject3" selected>การทำคลอดปกติ</option>
+  
+          <option value="./data/subject4">การดูแลผู้ป่วยจิตเวช</option>
+          <option value="./data/subject5">การให้สารละลายทางหลอดเลือดดำ</option>
+          <option value="./data/subject6">การให้อาหารทางสาย</option>
+          <option value="./data/subject7">การซักประวัติและการตรวจร่างกาย</option>
+        </select>
+      </div>
+      <div>
+        <label for="classFilter" class="block text-sm font-medium text-gray-700 mb-2">เลือก ชั้นเรียน</label>
+        <select id="classFilter" class="block w-full border border-gray-300 rounded-md shadow-sm p-2">
+          <option value="" selected>1A</option>
+          <option value="">2A</option>
+        </select>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // Array ของชื่อ Subject
+    const subjectNames = {
+      "./data/subject1": "การปั๊มหัวใจ CPR",
+      "./data/subject2": "การดูแลผู้คลอดที่มีภาวะตกเลือด",
+      "./data/subject3": "การทำคลอดปกติ",
+      "./data/subject4": "การให้สารละลายทางหลอดเลือดดำ",
+      "./data/subject5": "การให้อาหารทางสาย",
+      "./data/subject6": "การดูแลผู้ป่วยจิตเวช",
+      "./data/subject7": "การซักประวัติและการตรวจร่างกาย",
+    }
+  </script>
+  <script src="./js/lecturer/mock-data.js"></script>
+  <script src="./js/lecturer/setup.js"></script>
+  
+</body>
+</html>

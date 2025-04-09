@@ -4,7 +4,7 @@
  * =============================================================================
  */
 
-const ENABLE_MOCK_DATA = false;
+const ENABLE_MOCK_DATA = true;
 const ENABLE_GEN_CSV_FROM_MOCK_DATA = false;
 const DEFAULT_STUDENT_ID = '68200989';
 
